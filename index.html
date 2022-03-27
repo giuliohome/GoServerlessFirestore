@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Serverless App</title>
+</head>
+
+<body style="text-align:center;" id="body">
+	<h1 style="color:green;">
+	Serverless Cloud Funtion
+	</h1>
+
+	<p>
+		<!-- Making a text input -->
+		<input type="text" id="name" placeholder="Your key">
+
+		
+		<!-- Button to send data -->
+		<button onclick="sendJSON()">Read Value</button>
+		<br><br>
+		<!-- Making a text input -->
+		<input type="text" id="written" placeholder="Your value">
+
+		
+		<!-- Button to send data -->
+		<button onclick="writtenJSON()">Write Value</button>
+
+	<!-- For printing result from server -->
+	<p class="result" style="color:green"></p>
+	
+</p>
+<br><br>
+<button onclick="queryJSON()">Get Keys</button>
+<br><br>
+<textarea id="myTextarea" name="myTextarea" rows="10" cols="50">
+  Click on `get keys`
+  To retrieve the rows id
+  from the db 
+  </textarea>
+  <br><br>
+<!-- Include the JavaScript file -->
+  <script src="index03.js"></script>
+
+</body>
+</html>
+
+
+
