@@ -1,0 +1,37 @@
+swagger: '2.0'
+info:
+  title: Cloud Endpoints + GCF
+  description: Sample API on Cloud Endpoints with a Google Cloud Functions backend
+  version: 1.0.0
+host: cloudrun-service-bkwiygmzna-uc.a.run.app
+schemes:
+  - https
+produces:
+  - application/json
+security:
+ - auth0_jwk: []
+paths:
+  /hello:
+    post:
+      summary: Greet a user
+      operationId: hello
+      x-google-backend:
+        address: https://us-central1-my-cloud-giulio.cloudfunctions.net/function-1
+        path_translation: CONSTANT_ADDRESS
+        protocol: h2
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+securityDefinitions:
+  auth0_jwk:
+    authorizationUrl: "https://dev-v78dfdjk.us.auth0.com/authorize"
+    flow: "implicit"
+    type: "oauth2"
+    # Replace YOUR-ACCOUNT-NAME with your Auth0 account name.
+    x-google-issuer: "https://dev-v78dfdjk.us.auth0.com/"
+    x-google-jwks_uri: "https://dev-v78dfdjk.us.auth0.com/.well-known/jwks.json" 
+    # Optional. Replace YOUR-CLIENT-ID with your client ID
+    x-google-audiences: "https://cloudrun-service-bkwiygmzna-uc.a.run.app/"
+

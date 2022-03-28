@@ -1,5 +1,4 @@
-
-function sendJSON(){
+const sendJSON = async () => {
 			
 			let result = document.querySelector('.result');
 			let message = document.querySelector('#name');
@@ -13,6 +12,8 @@ function sendJSON(){
 			
 			// Set the request header i.e. which type of content you are sending
 			xhr.setRequestHeader("Content-Type", "application/json");
+			const token = await auth0.getTokenSilently();
+			xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
 			// Create a state change callback
 			xhr.onreadystatechange = function () {
@@ -28,9 +29,10 @@ function sendJSON(){
 			var data = JSON.stringify({ "message": message.value });
 
 			// Sending data with the request
+			xhr.withCredentials = true;
 			xhr.send(data);
 		}
-function writtenJSON(){
+const writtenJSON = async () => {
 			
 			let result = document.querySelector('.result');
 			let message = document.querySelector('#name');
@@ -45,6 +47,8 @@ function writtenJSON(){
 
 			// Set the request header i.e. which type of content you are sending
 			xhr.setRequestHeader("Content-Type", "application/json");
+			const token = await auth0.getTokenSilently();
+			xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
 			// Create a state change callback
 			xhr.onreadystatechange = function () {
@@ -60,9 +64,10 @@ function writtenJSON(){
 			var data = JSON.stringify({ "message": message.value, "operation": "write", "written": written.value });
 
 			// Sending data with the request
+			xhr.withCredentials = true;
 			xhr.send(data);
 		}
-function queryJSON(){
+const queryJSON = async () => {
 			
 			result = document.getElementById("myTextarea");
 			// Creating a XHR object
@@ -74,6 +79,8 @@ function queryJSON(){
 
 			// Set the request header i.e. which type of content you are sending
 			xhr.setRequestHeader("Content-Type", "application/json");
+			const token = await auth0.getTokenSilently();
+			xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
 			// Create a state change callback
 			xhr.onreadystatechange = function () {
@@ -89,5 +96,6 @@ function queryJSON(){
 			var data = JSON.stringify({ "operation": "query" });
 
 			// Sending data with the request
+			xhr.withCredentials = true;
 			xhr.send(data);
 }				

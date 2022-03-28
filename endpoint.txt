@@ -1,0 +1,67 @@
+https://us-central1-my-cloud-giulio.cloudfunctions.net/function-1
+
+
+https://cloud-run-service-bkwiygmzna-uc.a.run.app
+
+gcloud config set run/region us-central1
+
+gcloud run deploy cloudrun-service \
+    --image="gcr.io/cloudrun/hello" \
+    --allow-unauthenticated \
+    --platform managed \
+    --project=cloud-endpoint-esp
+
+
+gcloud endpoints services deploy openapi-functions.yaml \
+    --project cloud-endpoint-esp
+
+gcloud services enable cloudrun-service-bkwiygmzna-uc.a.run.app
+
+chmod +x gcloud_build_image
+
+./gcloud_build_image -s cloudrun-service-bkwiygmzna-uc.a.run.app \
+    -c 2022-03-28r5 -p cloud-endpoint-esp
+    
+gcloud run deploy cloud-run-service \
+  --image="gcr.io/cloud-endpoint-esp/endpoints-runtime-serverless:2.35.0-cloudrun-service-bkwiygmzna-uc.a.run.app-2022-03-28r5" \
+  --allow-unauthenticated \
+  --platform managed \
+  --project cloud-endpoint-esp
+  
+  service-24409114786@serverless-robot-prod.iam.gserviceaccount.com 
+  
+  24409114786-compute@developer.gserviceaccount.com 
+  
+  gcloud projects add-iam-policy-binding cloud-endpoint-esp \
+   --member "serviceAccount:24409114786-compute@developer.gserviceaccount.com" \
+   --role roles/servicemanagement.serviceController
+   
+gcloud functions add-iam-policy-binding function-1 \
+   --region us-central1 \
+   --member "serviceAccount:24409114786-compute@developer.gserviceaccount.com" \
+   --role "roles/cloudfunctions.invoker" \
+   --project my-cloud-giulio
+
+export ENDPOINTS_HOST=cloud-run-service-bkwiygmzna-uc.a.run.app
+
+curl --request GET \
+   --header "content-type:application/json" \
+   "https://${ENDPOINTS_HOST}/hello"
+
+curl --request GET \
+   --header "content-type:application/json" \
+   "https://cloud-run-service-bkwiygmzna-uc.a.run.app/hello"  
+
+curl --request POST \
+   --header "content-type:application/json" \
+   "https://cloud-run-service-bkwiygmzna-uc.a.run.app/hello"  
+
+cloud-run-service.giuliohome.com
+
+curl --request GET \
+   --header "content-type:application/json" \
+   "https://cloud-run-service.giuliohome.com/hello"  
+
+
+
+c.storage.googleapis.com

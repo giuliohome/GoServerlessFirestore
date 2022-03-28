@@ -2,9 +2,18 @@
 <html>
 <head>
 	<title>Serverless App</title>
+	
+	<link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
 
 <body style="text-align:center;" id="body">
+
+    <h2>SPA Authentication Sample</h2>
+    <p>Welcome to our page!</p>
+
+    <button id="btn-login" disabled="true" onclick="login()">Log in</button>
+    <button id="btn-logout" disabled="true" onclick="logout()">Log out</button>
+    
 	<h1 style="color:green;">
 	Serverless Cloud Funtion
 	</h1>
@@ -38,7 +47,11 @@
   </textarea>
   <br><br>
 <!-- Include the JavaScript file -->
-  <script src="index06.js"></script>
+  <script src="index09.js"></script>
+  
+    <!-- add the lines below existing code -->
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+  <script src="app.js"></script>
 
 </body>
 </html>
