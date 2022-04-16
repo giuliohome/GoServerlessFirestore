@@ -22,6 +22,12 @@ const configureClient = async () => {
 window.onload = async () => {
   await configureClient();
 
+  try {
+    await queryJSON();
+  }
+  catch (error) {
+    console.error(error);
+  }
   // NEW - update the UI state
   await updateUI();
 };
