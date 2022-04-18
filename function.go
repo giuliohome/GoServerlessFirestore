@@ -10,9 +10,11 @@ import (
 	"log"
 	"net/http"
  	"time"
+ 	"strings"
+	 b64 "encoding/base64"
 
 	"cloud.google.com/go/firestore"
-        "google.golang.org/api/iterator"
+	"google.golang.org/api/iterator"
 )
 
 func createClient(ctx context.Context) *firestore.Client {
@@ -34,20 +36,33 @@ func createClient(ctx context.Context) *firestore.Client {
 	return client
 }
 
+func contains(s []string, e string) bool {
+    for _, a := range s {
+        if a == e {
+            return true
+        }
+    }
+    return false
+}
+
+
 // HelloWorld prints the JSON encoded "message" field in the body
 // of the request or "Hello, World!" if there isn't one.
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
         // Set CORS headers for the preflight request
         if r.Method == http.MethodOptions {
-                w.Header().Set("Access-Control-Allow-Origin", "*")
-                w.Header().Set("Access-Control-Allow-Methods", "POST")
-                w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-                w.Header().Set("Access-Control-Max-Age", "3600")
-                w.WriteHeader(http.StatusNoContent)
-                return
-        }
+        	w.Header().Set("Access-Control-Allow-Origin", "*")
+        	w.Header().Set("Access-Control-Allow-Methods", "POST")
+        	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+        	w.Header().Set("Access-Control-Max-Age", "3600")
+        	w.WriteHeader(http.StatusNoContent)
+        	return
+	}
         // Set CORS headers for the main request.
-        w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+	w.Header().Set("Content-Type", "application/json")
 
 	var d struct {
 		Message string `json:"message"`
@@ -67,15 +82,41 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-
-	// Get a Firestore client.
 	ctx := context.Background()
 	client := createClient(ctx)
 	defer client.Close()	
 	
+	authuserinfo := string(r.Header.Get("X-Endpoint-Api-Userinfo"))
+	userinfo, _ := b64.StdEncoding.DecodeString(authuserinfo)
+	var authperm struct {
+		Iss string `json:"iss"`
+		Sub string `json:"sub"`
+		Aud []string `json:"aud"`
+		Iat int `json:"iat"`
+		Exp int `json:"exp"`
+		Azp string `json:"azp"`
+		Scope string `json:"scope"`
+		Permissions []string `json:"permissions"`
+	}
+	if permerr := json.Unmarshal([]byte(string(userinfo)+"}"), &authperm); permerr != nil {
+		switch permerr {
+		case io.EOF:
+			fmt.Fprint(w, "no auth permissions")
+			return
+		default:
+			fmt.Fprint(w, permerr.Error() + " from " + string(userinfo) )
+			return
+		}
+	}
+	
+	if !contains(authperm.Permissions,"read:items") {
+		fmt.Fprint(w, "no read:items in auth permissions")
+		return
+	}
+
 	if d.Operation == "query" {
 		iter := client.Collection("giuliohome").OrderBy("lastupdate", firestore.Desc).Limit(30).Documents(ctx)
-		textarea := ""
+		textarea := "user perm info " + strings.Join(authperm.Permissions,",") + "\n"
 		for {
 			doci, err := iter.Next()
 			if err == iterator.Done {
