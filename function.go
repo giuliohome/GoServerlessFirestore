@@ -87,7 +87,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 	defer client.Close()	
 	
 	authuserinfo := string(r.Header.Get("X-Endpoint-Api-Userinfo"))
-	userinfo, _ := b64.StdEncoding.DecodeString(authuserinfo)
+	userinfo, _ := b64.RawURLEncoding.DecodeString(authuserinfo)
 	var authperm struct {
 		Iss string `json:"iss"`
 		Sub string `json:"sub"`
@@ -98,7 +98,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 		Scope string `json:"scope"`
 		Permissions []string `json:"permissions"`
 	}
-	if permerr := json.Unmarshal([]byte(string(userinfo)+"}"), &authperm); permerr != nil {
+	if permerr := json.Unmarshal(userinfo, &authperm); permerr != nil {
 		switch permerr {
 		case io.EOF:
 			fmt.Fprint(w, "no auth permissions")
@@ -116,7 +116,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 
 	if d.Operation == "query" {
 		iter := client.Collection("giuliohome").OrderBy("lastupdate", firestore.Desc).Limit(30).Documents(ctx)
-		textarea := "user perm info " + strings.Join(authperm.Permissions,",") + "\n"
+		textarea := "okta auth0 perm info " + strings.Join(authperm.Permissions,",") + "\n"
 		for {
 			doci, err := iter.Next()
 			if err == iterator.Done {
